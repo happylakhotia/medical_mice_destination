@@ -35,7 +35,7 @@ export default function NavBar() {
       <div className="flex flex-1 justify-center">
         {navigationOptions.map((option) => {
           return (
-            <Button variant="link" className="text-xl">
+            <Button variant="link" className="text-xl" key={option.title}>
               <Link href={option.link}>{option.title}</Link>
             </Button>
           )
