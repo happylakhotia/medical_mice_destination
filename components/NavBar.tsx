@@ -15,6 +15,10 @@ const navigationOptions = [
     link: '/',
   },
   {
+    title: 'Gallery',
+    link: '/',
+  },
+  {
     title: 'Contact',
     link: '/',
   },
