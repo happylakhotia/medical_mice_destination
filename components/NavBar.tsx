@@ -43,12 +43,16 @@ function Profile() {
 function LogInSignUp() {
   return  (
     <>
-    <Button className="h-full px-8 text-base">
-      <Link href="/login/">Log In</Link>
-    </Button>
-    <Button className="h-full px-8 text-base">
-      <Link href="/">Sign Up</Link>
-    </Button>
+    <Link href="/login/">
+      <Button className="h-full px-8 text-base">
+        Log In
+      </Button>
+    </Link>
+    <Link href="/">
+      <Button className="h-full px-8 text-base">
+        Sign Up
+       </Button>
+    </Link>
   </>
   )
 }
@@ -60,9 +64,11 @@ export default function NavBar({ isLoggedIn=false }) {
       <div className="flex flex-1 justify-center">
         {navigationOptions.map((option) => {
           return (
-            <Button variant="link" className="text-xl" key={option.title}>
-              <Link href={option.link}>{option.title}</Link>
-            </Button>
+            <Link href={option.link} key={option.title}>
+              <Button variant="link" className="text-xl">
+               {option.title}
+              </Button>
+            </Link>
           )
         })}
       </div>
