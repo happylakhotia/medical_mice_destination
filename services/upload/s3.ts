@@ -24,6 +24,7 @@ export async function UploadOnS3(
   try {
     await makePutRequestToS3(url.url, errorSetter, data[name]);
     urlSetter(url.url.split("?")[0]);
+		return url.url.split("?")[0]
   } catch (err) {
     console.log("Error");
     return;
