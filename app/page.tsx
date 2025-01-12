@@ -2,6 +2,7 @@
 import { useRouter } from 'next/navigation'
 
 import * as React from 'react'
+import { useState } from 'react'
 
 import NavBar from '@/components/NavBar'
 import LandingPageContent from '@/components/LandingPageContent'
@@ -39,7 +40,7 @@ export default function Landing() {
   return (
     <>
       <main className="flex min-h-screen flex-col justify-start">
-        <NavBar />
+        <NavBar isLoggedIn={false}/>
         <LandingPageContent />
       </main>
 

@@ -1,3 +1,4 @@
+import LoginButton from './LoginButton'
 import { Button } from './ui/button'
 import Link from 'next/link'
 
@@ -32,7 +33,27 @@ function Logo() {
   )
 }
 
-export default function NavBar() {
+// TODO: include drop downs
+function Profile() {
+  return (
+    <div>Profile</div>
+  )
+}
+
+function LogInSignUp() {
+  return  (
+    <>
+    <Button className="h-full px-8 text-base">
+      <Link href="/login/">Log In</Link>
+    </Button>
+    <Button className="h-full px-8 text-base">
+      <Link href="/">Sign Up</Link>
+    </Button>
+  </>
+  )
+}
+
+export default function NavBar({ isLoggedIn=false }) {
   return (
     <div className="flex h-20 items-center px-16 text-xl shadow-xl">
       <Logo />
@@ -46,12 +67,11 @@ export default function NavBar() {
         })}
       </div>
       <div className="flex flex-1 justify-end gap-4">
-        <Button className="h-full px-8 text-base">
-          <Link href="/">Log In</Link>
-        </Button>
-        <Button className="h-full px-8 text-base">
-          <Link href="/">Sign Up</Link>
-        </Button>
+        {isLoggedIn ? (
+          <Profile />
+        ) : (
+          <LogInSignUp />
+        )}
       </div>
     </div>
   )
