@@ -2,7 +2,6 @@ import NavBar from "@/components/NavBar"
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -31,8 +30,8 @@ function LogInForm() {
           </CardHeader>
           <CardContent className="flex-1 flex flex-col gap-6">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="username" className="text-base">Username</Label>
-              <Input id="username" placeholder="Sarthak_77" />
+              <Label htmlFor="email" className="text-base">Email</Label>
+              <Input id="email" placeholder="joemama@gmail.com" />
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="password" className="text-base">Password</Label>
@@ -75,16 +74,3 @@ export default function LogIn() {
     </main>
   )
 }
-
-{/* <Card>
-  <CardHeader>
-    <CardTitle>Card Title</CardTitle>
-    <CardDescription>Card Description</CardDescription>
-  </CardHeader>
-  <CardContent>
-    <p>Card Content</p>
-  </CardContent>
-  <CardFooter>
-    <p>Card Footer</p>
-  </CardFooter>
-</Card> */}
