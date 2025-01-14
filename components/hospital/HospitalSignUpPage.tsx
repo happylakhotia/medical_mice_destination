@@ -1,22 +1,22 @@
-"use client";
+'use client'
 
-import { Button } from "../ui/button";
-import { useState } from "react";
-import BasicInfoComponent from "../BasicInfoComponent";
+import { Button } from '../ui/button'
+import { useState } from 'react'
+import BasicInfoComponent from '../BasicInfoComponent'
 
 const steps = [
-  { id: 0, title: "Basic Info", description: "Interesting description" },
-  { id: 1, title: "Media Upload", description: "Interesting description" },
-  { id: 2, title: "Facility Details", description: "Interesting description" },
-  { id: 3, title: "Legal Documents", description: "Interesting description" },
-  { id: 4, title: "Verification", description: "Interesting description" },
-];
+  { id: 0, title: 'Basic Info', description: 'Interesting description' },
+  { id: 1, title: 'Media Upload', description: 'Interesting description' },
+  { id: 2, title: 'Facility Details', description: 'Interesting description' },
+  { id: 3, title: 'Legal Documents', description: 'Interesting description' },
+  { id: 4, title: 'Verification', description: 'Interesting description' },
+]
 
 function StepButton({ title, description, handleClick, stepNumber }) {
   return (
     <button
       onClick={handleClick}
-      className="h-18 items-center gap-4 rounded-md border-2 flex border-transparent px-8 py-2 text-start text-lg focus:border-emerald-400"
+      className="h-18 flex items-center gap-4 rounded-md border-2 border-transparent px-8 py-2 text-start text-lg focus:border-emerald-400"
     >
       <div className="flex aspect-square h-5/6 items-center justify-center rounded-full bg-green-400">
         <div>{stepNumber}</div>
@@ -26,50 +26,50 @@ function StepButton({ title, description, handleClick, stepNumber }) {
         <div className="text-base text-neutral-600">{description}</div>
       </div>
     </button>
-  );
+  )
 }
 
 // Components for each step
 function BasicInfo() {
-  return <div>Basic Info Component</div>;
+  return <div>Basic Info Component</div>
 }
 
 function MediaUpload() {
-  return <div>Media Upload Component</div>;
+  return <div>Media Upload Component</div>
 }
 
 function FacilityDetails() {
-  return <div>Facility Details Component</div>;
+  return <div>Facility Details Component</div>
 }
 
 function LegalDocuments() {
-  return <div>Legal Documents Component</div>;
+  return <div>Legal Documents Component</div>
 }
 
 function Verification() {
-  return <div>Verification Component</div>;
+  return <div>Verification Component</div>
 }
 
 // Main Component
 export default function HospitalSignUpPage() {
-  const [selectedStep, setSelectedStep] = useState(0);
+  const [selectedStep, setSelectedStep] = useState(0)
 
   const renderForm = () => {
     switch (selectedStep) {
       case 0:
-        return <BasicInfoComponent />;
+        return <BasicInfoComponent />
       case 1:
-        return <MediaUpload />;
+        return <MediaUpload />
       case 2:
-        return <FacilityDetails />;
+        return <FacilityDetails />
       case 3:
-        return <LegalDocuments />;
+        return <LegalDocuments />
       case 4:
-        return <Verification />;
+        return <Verification />
       default:
-        return <div>Select a step to continue</div>;
+        return <div>Select a step to continue</div>
     }
-  };
+  }
 
   return (
     <main className="flex min-h-screen">
@@ -102,5 +102,5 @@ export default function HospitalSignUpPage() {
         {renderForm()}
       </section>
     </main>
-  );
+  )
 }
