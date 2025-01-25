@@ -1,2 +1,2 @@
-import HospitalSignUpPage from "@/components/hospital/HospitalSignUpPage";
-export default HospitalSignUpPage
+import { OnsiteVerificationComponent } from '@/components/hospital/hospital_registration/OnsiteVerficationComponent'
+export default OnsiteVerificationComponent

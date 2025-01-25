@@ -1,5 +1,4 @@
-import LoginButton from './LoginButton'
-import { Button } from './ui/button'
+import { Button } from '../ui/button'
 import Link from 'next/link'
 
 const navigationOptions = [
@@ -35,29 +34,23 @@ function Logo() {
 
 // TODO: include drop downs
 function Profile() {
-  return (
-    <div>Profile</div>
-  )
+  return <div>Profile</div>
 }
 
 function LogInSignUp() {
-  return  (
+  return (
     <>
-    <Link href="/login/">
-      <Button className="h-full px-8 text-base">
-        Log In
-      </Button>
-    </Link>
-    <Link href="/">
-      <Button className="h-full px-8 text-base">
-        Sign Up
-       </Button>
-    </Link>
-  </>
+      <Link href="/login/">
+        <Button className="h-full px-8 text-base">Log In</Button>
+      </Link>
+      <Link href="/">
+        <Button className="h-full px-8 text-base">Sign Up</Button>
+      </Link>
+    </>
   )
 }
 
-export default function NavBar({ isLoggedIn=false }) {
+export default function NavBar({ isLoggedIn = false }) {
   return (
     <div className="flex h-20 items-center px-16 text-xl shadow-xl">
       <Logo />
@@ -66,18 +59,14 @@ export default function NavBar({ isLoggedIn=false }) {
           return (
             <Link href={option.link} key={option.title}>
               <Button variant="link" className="text-xl">
-               {option.title}
+                {option.title}
               </Button>
             </Link>
           )
         })}
       </div>
       <div className="flex flex-1 justify-end gap-4">
-        {isLoggedIn ? (
-          <Profile />
-        ) : (
-          <LogInSignUp />
-        )}
+        {isLoggedIn ? <Profile /> : <LogInSignUp />}
       </div>
     </div>
   )

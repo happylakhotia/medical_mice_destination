@@ -1,8 +1,8 @@
 'use client'
 
-import { Button } from '../ui/button'
+import { Button } from '../../ui/button'
 import { useState } from 'react'
-import BasicInfoComponent from '../BasicInfoComponent'
+import BasicInfoComponent2 from './BasicInfoComponent2'
 
 const steps = [
   { id: 0, title: 'Basic Info', description: 'Interesting description' },
@@ -57,7 +57,7 @@ export default function HospitalSignUpPage() {
   const renderForm = () => {
     switch (selectedStep) {
       case 0:
-        return <BasicInfoComponent />
+        return <BasicInfoComponent2 />
       case 1:
         return <MediaUpload />
       case 2:

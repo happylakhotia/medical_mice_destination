@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 
-import { Button } from './ui/button'
+import { Button } from '../ui/button'
 import { Cardo } from 'next/font/google'
 import Link from 'next/link'
 
