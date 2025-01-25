@@ -84,9 +84,9 @@ function Options() {
   )
 }
 
-export default function LandingPageContent() {
+export default function Hero() {
   return (
-    <div className="flex flex-grow items-center gap-12 bg-slate-200 p-16">
+    <div className="flex min-h-screen flex-grow items-center gap-12">
       <LandingText />
       <Options />
     </div>

@@ -3,8 +3,7 @@ import { useRouter } from 'next/navigation'
 
 import * as React from 'react'
 
-import NavBar from '@/components/landing/NavBar'
-import LandingPageContent from '@/components/landing/LandingPageContent'
+import Hero from './Hero'
 
 export default function LandingPage() {
   const router = useRouter()
@@ -38,9 +37,10 @@ export default function LandingPage() {
 
   return (
     <>
-      <main className="flex min-h-screen flex-col justify-start">
-        <NavBar isLoggedIn={false} />
-        <LandingPageContent />
+      <main className="flex flex-col items-center justify-center">
+        <div className="container">
+          <Hero />
+        </div>
       </main>
 
       {/* For Daksh: Moving buttons to bottom of page for experimentation*/}
