@@ -1,2 +1,2 @@
-import BookAppointmentPage from '@/components/user/book_appointment/BookAppointmentPage'
-export default BookAppointmentPage
+import HospitalSignUpPage from '@/components/hospital/hospital_registration/HospitalSignUpPage'
+export default HospitalSignUpPage
