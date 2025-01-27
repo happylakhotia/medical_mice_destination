@@ -2,7 +2,7 @@ import React from 'react'
 
 const LocationSection = () => {
   return (
-    <section id="location" className="bg-gray-50 px-8 py-16">
+    <section id="location" className="bg-gray-50">
       <div className="mx-auto max-w-7xl">
         {/* Section Header */}
         <div className="mb-12 text-center">
@@ -27,7 +27,7 @@ const LocationSection = () => {
           {/* Location Details */}
           <div className="space-y-8">
             {/* Address Card */}
-            <div className="rounded-xl border border-neutral-200/20 bg-white p-6">
+            <div className="rounded-xl border border-neutral-300 bg-white p-6">
               <h3 className="mb-4 text-xl font-semibold text-gray-900">
                 Address
               </h3>
@@ -64,7 +64,7 @@ const LocationSection = () => {
             </div>
 
             {/* Contact Information */}
-            <div className="rounded-xl border border-neutral-200/20 bg-white p-6">
+            <div className="rounded-xl border border-neutral-300 bg-white p-6">
               <h3 className="mb-4 text-xl font-semibold text-gray-900">
                 Contact Information
               </h3>
@@ -108,7 +108,7 @@ const LocationSection = () => {
             </div>
 
             {/* Transportation */}
-            <div className="rounded-xl border border-neutral-200/20 bg-white p-6">
+            <div className="rounded-xl border border-neutral-300 bg-white p-6">
               <h3 className="mb-4 text-xl font-semibold text-gray-900">
                 Getting Here
               </h3>

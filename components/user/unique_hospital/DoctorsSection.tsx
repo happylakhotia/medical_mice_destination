@@ -2,7 +2,7 @@ import React from 'react'
 
 const DoctorsSection = () => {
   return (
-    <section id="doctors" className="bg-gray-50 px-8 py-16">
+    <section id="doctors" className="bg-gray-50">
       <div className="mx-auto max-w-7xl">
         {/* Section Header */}
         <div className="mb-12 text-center">
