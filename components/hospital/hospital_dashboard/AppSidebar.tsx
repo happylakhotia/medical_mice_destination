@@ -20,12 +20,12 @@ const mainMenuItems = [
   {
     title: 'Create Doctor',
     icon: Plus,
-    url: '/create-doctor',
+    url: '/',
   },
   {
     title: 'Applications',
     icon: LayoutDashboard,
-    url: '/applications',
+    url: '/',
   },
 ]
 

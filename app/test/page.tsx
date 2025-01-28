@@ -1,2 +1,2 @@
-import ApplicationsPage from '@/components/hospital/hospital_dashboard/applications/ApplicationsPage'
-export default ApplicationsPage
+import ExplainConditionPage from '@/components/user/explain_condition/ExplainConditionPage'
+export default ExplainConditionPage
