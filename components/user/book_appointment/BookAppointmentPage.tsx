@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
 import { DateTimePicker } from '@/components/ui/date_time_picker'
 
 const BookAppointmentPage = () => {
@@ -16,7 +17,7 @@ const BookAppointmentPage = () => {
       className="flex min-h-screen flex-col items-center py-32"
     >
       <div className="mx-auto max-w-7xl px-4">
-        <div className="flex flex-col items-center gap-12 lg:flex-row">
+        <div className="flex flex-col gap-12 lg:flex-row">
           {/* Booking Form */}
           <div className="container flex flex-col lg:w-2/3">
             <h2 className="mb-8 text-3xl font-bold">Book Your Appointment</h2>
@@ -33,6 +34,7 @@ const BookAppointmentPage = () => {
                     </Label>
                     <Input
                       type="text"
+                      placeholder="Enter your first name"
                       className="w-full rounded-lg border focus:border-blue-500 focus:ring-blue-500"
                     />
                   </div>
@@ -42,11 +44,11 @@ const BookAppointmentPage = () => {
                     </Label>
                     <Input
                       type="text"
+                      placeholder="Enter your last name"
                       className="w-full rounded-lg border focus:border-blue-500 focus:ring-blue-500"
                     />
                   </div>
                 </div>
-                {/* Additional Fields */}
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
                     <Label className="mb-1 block text-sm font-medium">
@@ -54,6 +56,7 @@ const BookAppointmentPage = () => {
                     </Label>
                     <Input
                       type="number"
+                      placeholder="Enter your age"
                       className="w-full rounded-lg border focus:border-blue-500 focus:ring-blue-500"
                     />
                   </div>
@@ -74,18 +77,89 @@ const BookAppointmentPage = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Contact Details */}
+              <div className="space-y-4 rounded-xl bg-gray-50 p-6">
+                <h3 className="mb-4 text-xl font-semibold">Contact Details</h3>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div>
+                    <Label className="mb-1 block text-sm font-medium">
+                      Email
+                    </Label>
+                    <Input
+                      type="email"
+                      placeholder="Enter your email"
+                      className="w-full rounded-lg border focus:border-blue-500 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <Label className="mb-1 block text-sm font-medium">
+                      Phone Number
+                    </Label>
+                    <Input
+                      type="tel"
+                      placeholder="Enter your phone number"
+                      className="w-full rounded-lg border focus:border-blue-500 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label className="mb-1 block text-sm font-medium">
+                    Address
+                  </Label>
+                  <Textarea
+                    placeholder="Enter your full address"
+                    className="w-full rounded-lg border focus:border-blue-500 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              {/* Medical Details */}
+              <div className="space-y-4 rounded-xl bg-gray-50 p-6">
+                <h3 className="mb-4 text-xl font-semibold">Medical Details</h3>
+                <div>
+                  <Label className="mb-1 block text-sm font-medium">
+                    Medical Condition
+                  </Label>
+                  <Textarea
+                    placeholder="Describe your medical condition"
+                    className="w-full rounded-lg border focus:border-blue-500 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div>
+                    <Label className="mb-1 block text-sm font-medium">
+                      Previous Medications
+                    </Label>
+                    <Input
+                      type="text"
+                      placeholder="Enter previous medications"
+                      className="w-full rounded-lg border focus:border-blue-500 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <Label className="mb-1 block text-sm font-medium">
+                      Allergies
+                    </Label>
+                    <Input
+                      type="text"
+                      placeholder="Enter any known allergies"
+                      className="w-full rounded-lg border focus:border-blue-500 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
               {/* Appointment Details */}
               <div className="space-y-4 rounded-xl bg-gray-50 p-6">
                 <h3 className="mb-4 text-xl font-semibold">
                   Appointment Details
                 </h3>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <div>
-                    <Label className="mb-1 block text-sm font-medium">
-                      Preferred Date & Time
-                    </Label>
-                    <DateTimePicker className="w-full rounded-lg border focus:border-blue-500 focus:ring-blue-500" />
-                  </div>
+                <div>
+                  <Label className="mb-1 block text-sm font-medium">
+                    Preferred Date & Time
+                  </Label>
+                  <DateTimePicker className="w-full rounded-lg border focus:border-blue-500 focus:ring-blue-500" />
                 </div>
               </div>
               <button

@@ -1,2 +1,2 @@
-import EvisaChecklistPage from '@/components/user/evisa/evisa_checklist/EvisaChecklist'
-export default EvisaChecklistPage
+import ApplicationsPage from '@/components/hospital/hospital_dashboard/applications/ApplicationsPage'
+export default ApplicationsPage
