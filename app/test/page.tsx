@@ -1,2 +1,2 @@
-import ExplainConditionPage from '@/components/user/explain_condition/ExplainConditionPage'
-export default ExplainConditionPage
+import RegisterDoctorPage from '@/components/hospital/hospital_dashboard/register_doctor/RegisterDoctorPage'
+export default RegisterDoctorPage
