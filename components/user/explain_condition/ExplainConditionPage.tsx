@@ -123,7 +123,7 @@ const Explain = () => {
 
 const ExplainConditionPage = () => {
   return (
-    <main className="flex h-screen w-screen flex-col items-center justify-center bg-neutral-100">
+    <main className="flex min-h-screen w-screen flex-col items-center justify-center bg-neutral-100">
       <div className="container flex h-full w-full flex-col gap-8 p-8 md:flex-row">
         <HowItWorks />
         <Explain />
