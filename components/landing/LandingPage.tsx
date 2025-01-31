@@ -42,25 +42,6 @@ export default function LandingPage() {
           <Hero />
         </div>
       </main>
-
-      {/* For Daksh: Moving buttons to bottom of page for experimentation*/}
-      <div>
-        <button onClick={handleMedicalTourism} className="primary-button m-3">
-          Medical Tourism
-        </button>
-        <button onClick={handleMICE} className="primary-button m-3">
-          MICE
-        </button>
-        <button
-          onClick={handleDestinationWedding}
-          className="primary-button m-3"
-        >
-          Destination Weddings
-        </button>
-        <button onClick={handleLogin} className="primary-button m-3">
-          Log In With Google
-        </button>
-      </div>
     </>
   )
 }

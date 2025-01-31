@@ -1,3 +1,4 @@
+import { User, useUserContext } from '@/services/contexts/userContext'
 import { Button } from '../ui/button'
 import Link from 'next/link'
 
@@ -10,8 +11,8 @@ const navigationOptions = [
 ]
 
 // Profile Component
-function Profile() {
-  return <div>Profile</div>
+function Profile({user}: {user:User}) {
+  return <Link href={`/dashboard/patient/${user.ID}`}>{user.Name}</Link>
 }
 
 // LogIn Button
@@ -25,6 +26,9 @@ function LogInSignUp() {
 
 // NavBar Component
 export default function NavBar({ isLoggedIn = false }) {
+
+  const {user} = useUserContext()
+
   return (
     <nav className="shadow-md">
       <div className="container mx-auto flex h-16 items-center px-4 md:px-8">
@@ -48,7 +52,7 @@ export default function NavBar({ isLoggedIn = false }) {
 
         {/* Profile or Log In */}
         <div className="flex flex-shrink-0 gap-4">
-          {isLoggedIn ? <Profile /> : <LogInSignUp />}
+          {user ? <Profile user={user}/> : <LogInSignUp />}
         </div>
 
         {/* Mobile Navigation Menu (for smaller screens) */}
