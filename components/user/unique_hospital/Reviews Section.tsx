@@ -1,9 +1,77 @@
-import React from 'react'
+"use client"
+import ADD_RATING_MUTATION from '@/services/apollo/mutations/addRating'
+import ADD_REVIEW_MUTATION from '@/services/apollo/mutations/addReview'
+import GET_UNIQUE_USER from '@/services/apollo/queries/getUniqueUser'
+import { useApolloClient, useMutation } from '@apollo/client'
+import React, { useEffect, useState } from 'react'
 
-const ReviewsSection = () => {
+const ReviewsSection = ({ reviews, hospitalId }: { reviews: any[], hospitalId: string }) => {
+  const client = useApolloClient() 
+  const [sendReview] = useMutation(ADD_REVIEW_MUTATION, {
+    context: {
+      requiresAuth: true
+    }
+  })
+  const [sendRating] = useMutation(ADD_RATING_MUTATION, {
+    context: {
+      requiresAuth: true
+    }
+  })
+
+  const [users, setUsers] = useState<{ [key: string]: any }>({})
+
+  async function getAllReviews() {
+    const uniqueAuthors = Array.from(reviews.map(review => review.author))
+    const newUsers: { [key: string]: any } = {}
+    for (let authorId of uniqueAuthors) {
+      try {
+        const { data } = await client.query({
+          query: GET_UNIQUE_USER,
+          variables: { userId: authorId },
+          context: {
+            requiresAuth: true
+          }
+        })
+        console.log(data)
+        // Assuming your query returns data in data.getUserByID
+        newUsers[authorId] = data.getUserByID
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    setUsers(newUsers)
+  }
+
+  useEffect(() => {
+    getAllReviews()
+  }, [reviews])
+
+  async function addReview(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const form = e.currentTarget as HTMLFormElement
+    const formData = new FormData(form)
+    const content = formData.get("content")
+    const rating = formData.get("rating")
+    try {
+      const { data } = await sendReview({
+        variables: { content: content, hospitalId: hospitalId}
+      })
+
+      const response = await sendRating({
+        variables: {rating: Number(rating), hospitalId: hospitalId}
+      }) 
+      console.log(data)
+      console.log(response.data)
+      alert("Review added")
+      // Optionally, update your UI with the new review here.
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   return (
     <section id="reviews" className="my-28">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-7xl px-4">
         {/* Section Header */}
         <div className="mb-12 text-center">
           <h2 className="mb-4 text-3xl font-bold text-gray-900">
@@ -18,9 +86,8 @@ const ReviewsSection = () => {
               >
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.803 2.03a1 1 0 00-.314 1.118l1.07 3.292c.3.92-.755 1.688-1.538 1.118l-2.802-2.03a1 1 0 00-1.18 0l-2.803 2.03c-.783.57-1.838-.198-1.538-1.118l1.071-3.292a1 1 0 00-.314-1.118L3.568 8.72C2.785 8.15 3.187 7.01 4.157 7.01h3.462a1 1 0 00.95-.69l1.07-3.292z" />
               </svg>
-              <span className="text-sm font-semibold text-yellow-400">4.5</span>
             </div>
-            <span className="text-sm text-gray-600">| 256 Reviews</span>
+            <span className="text-sm text-gray-600">{reviews.length} Reviews</span>
           </div>
           <p className="mx-auto max-w-3xl text-gray-600">
             Hear what our patients have to say about their experience with us!
@@ -29,59 +96,67 @@ const ReviewsSection = () => {
 
         {/* Reviews List */}
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-          <div className="rounded-xl bg-white p-6 shadow-lg">
-            <p className="mb-4 text-gray-700">
-              "Best experience! The doctors and staff were incredibly kind and
-              professional. I felt well taken care of throughout my stay."
-            </p>
-            <div className="flex items-center">
-              <img
-                src="https://randomuser.me/api/portraits/men/1.jpg"
-                alt="Reviewer"
-                className="mr-3 h-12 w-12 rounded-full"
-              />
-              <div>
-                <p className="font-semibold text-gray-900">John Doe</p>
-                <p className="text-sm text-gray-500">Patient</p>
+          {reviews.map((review, index) => {
+            const user = users[review.author]
+            return (
+              <div key={index} className="rounded-xl bg-white p-6 shadow-lg">
+                <p className="mb-4 text-gray-700">
+                  "{review.content}"
+                </p>
+                <div className="flex items-center">
+                  <img
+                    src={user?.profilePic || "https://randomuser.me/api/portraits/lego/1.jpg"}
+                    alt={user?.name || "Reviewer"}
+                    className="mr-3 h-12 w-12 rounded-full"
+                  />
+                  <div>
+                    <p className="font-semibold text-gray-900">
+                      {user?.name || "Anonymous"}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {user?.email || "No Email"}
+                    </p>
+                  </div>
+                </div>
               </div>
+            )
+          })}
+        </div>
+        
+        {/* Add Review Form */}
+        <div className="mt-12 max-w-lg mx-auto">
+          <form onSubmit={addReview} className="flex flex-col gap-4">
+            <div>
+              <label htmlFor="rating" className="block text-sm font-medium text-gray-700 mb-1">
+                Rating (out of 5)
+              </label>
+              <select
+                name="rating"
+                id="rating"
+                className="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring focus:border-blue-300"
+                defaultValue=""
+              >
+                <option value="" disabled>Select Rating</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
             </div>
-          </div>
-
-          <div className="rounded-xl bg-white p-6 shadow-lg">
-            <p className="mb-4 text-gray-700">
-              "Amazing service and amazing doctors. The entire staff made me
-              feel like family. I would highly recommend this hospital."
-            </p>
-            <div className="flex items-center">
-              <img
-                src="https://randomuser.me/api/portraits/women/1.jpg"
-                alt="Reviewer"
-                className="mr-3 h-12 w-12 rounded-full"
-              />
-              <div>
-                <p className="font-semibold text-gray-900">Jane Smith</p>
-                <p className="text-sm text-gray-500">Patient</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-xl bg-white p-6 shadow-lg">
-            <p className="mb-4 text-gray-700">
-              "A truly exceptional experience. The medical team is highly
-              skilled and always keeps you informed throughout your treatment."
-            </p>
-            <div className="flex items-center">
-              <img
-                src="https://randomuser.me/api/portraits/men/2.jpg"
-                alt="Reviewer"
-                className="mr-3 h-12 w-12 rounded-full"
-              />
-              <div>
-                <p className="font-semibold text-gray-900">Sam Wilson</p>
-                <p className="text-sm text-gray-500">Patient</p>
-              </div>
-            </div>
-          </div>
+            <textarea
+              name="content"
+              placeholder="Write your review..."
+              className="p-3 rounded-md border border-gray-300 focus:outline-none focus:ring focus:border-blue-300"
+              rows={4}
+            ></textarea>
+            <button
+              type="submit"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded"
+            >
+              Submit Review
+            </button>
+          </form>
         </div>
       </div>
     </section>

@@ -2,11 +2,11 @@
 import { createContext, useContext, useState } from "react"
 
 export type User = {
-    ID: string,
-    Name: string,
-    Email: string,
-    Role: string,
-    ProfilePic: string,
+    id: string,
+    name: string,
+    email: string,
+    role: string,
+    profilePic: string,
 }
 
 interface userContextInterface {

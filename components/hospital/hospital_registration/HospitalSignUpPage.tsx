@@ -7,6 +7,7 @@ import MediaUpload from './MediaUpload'
 import FacilityDetails from './FacilityDetails'
 import LegalDocuments from './LegalDocuments'
 import Verification from './Verification'
+import { useHospital } from '@/services/contexts/hopitalContext'
 
 const steps = [
   { id: 0, title: 'Basic Info', description: 'Interesting description' },
@@ -16,7 +17,7 @@ const steps = [
   { id: 4, title: 'Verification', description: 'Interesting description' },
 ]
 
-function StepButton({ title, description, handleClick, stepNumber }) {
+function StepButton({ title, description, handleClick, stepNumber }: {title: string, description: string, handleClick: () => void, stepNumber :number}) {
   return (
     <button
       onClick={handleClick}
@@ -33,47 +34,48 @@ function StepButton({ title, description, handleClick, stepNumber }) {
   )
 }
 
-// Components for each step
-// function BasicInfo() {
-//   return <div>Basic Info Component</div>
-// }
-
-// function MediaUpload() {
-//   return <div>Media Upload Component</div>
-// }
-
-// function FacilityDetails() {
-//   return <div>Facility Details Component</div>
-// }
-
-// function LegalDocuments() {
-//   return <div>Legal Documents Component</div>
-// }
-
-// function Verification() {
-//   return <div>Verification Component</div>
-// }
-
-// Main Component
-function HospitalSignUpPage() {
+function HospitalSignUpPage({rootid}: {rootid: string}) {
   const [selectedStep, setSelectedStep] = useState(0)
+  const {hospital, uploadHospital} = useHospital()
+  const [uploading, setUploading] = useState(false)
 
+  console.log(rootid)
   const renderForm = () => {
     switch (selectedStep) {
       case 0:
-        return <BasicInfo />
+        return <BasicInfo  handleStep={() => setSelectedStep(1)} rootId={rootid}/>
       case 1:
-        return <MediaUpload />
+        return <MediaUpload handleStep={() => setSelectedStep(2)}/>
       case 2:
-        return <FacilityDetails />
+        return <FacilityDetails handleStep={() => setSelectedStep(3)}></FacilityDetails>
       case 3:
-        return <LegalDocuments />
+        return <LegalDocuments handleStep={() => setSelectedStep(4)}></LegalDocuments>
       case 4:
-        return <Verification />
+        return <Verification handleStep={() => setSelectedStep(5)}></Verification>
+      case 5:
+        return <h1>You Have reached the application end click submit</h1>
       default:
         return <div>Select a step to continue</div>
     }
   }
+
+  function PrintHospital() {
+    console.log(hospital)
+  }
+
+  async function handleUpload() {
+    console.log("clicked")
+    
+    setUploading(true)
+    try {
+    await uploadHospital()
+    } catch (err) {
+      console.log(err)
+    }
+    setUploading(false)
+    alert("hospital registered")
+  }
+
 
   return (
     <main className="flex min-h-[calc(100vh-4rem)] gap-8 p-6">
@@ -98,10 +100,10 @@ function HospitalSignUpPage() {
             />
           ))}
         </div>
-        <Button className="w-full py-3 text-lg">Submit</Button>
+        <Button onClick={PrintHospital} className="w-full py-3 text-lg">Print Hospital</Button>
+        <Button onClick={handleUpload} className="w-full py-3 text-lg">{uploading ? "Uploading ..." : "Submit"}</Button>
       </aside>
 
-      {/* Form Content */}
       <section className="flex-1 rounded-md border bg-white p-8 shadow-lg">
         {renderForm()}
       </section>

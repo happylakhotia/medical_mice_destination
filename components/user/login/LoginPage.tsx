@@ -38,27 +38,23 @@ function LogInForm() {
       console.log("user logged in successfully", response)
       localStorage.setItem("token", response.data.login.token)
 
-      const user : User = {
-        ID: response.data.login.user.id,
-        Name: response.data.login.user.name,
-        ProfilePic: response.data.login.user.profilePic, 
-        Email: response.data.login.user.email,
-        Role: response.data.login.user.role,
-      }      
+      const user = response.data.login.user
+      console.log(user)
+      localStorage.setItem("ID", response.data.login.user.id)
       uploadUser(user)
 
 
 
       // handle redirection based on roles
 
-      if (user.Role == "DOCTOR") {
-        router.push(`/dashboard/doctor/${user.ID}`)
-      } else if (user.Role == "PATIENT") {
-        router.push("/explain")
-      } else if (user.Role == "ROOT") {
-        router.push(`/dashboard/root/${user.ID}`)
-      } else if (user.Role == "STAFF") {
-        router.push(`/dashboard/staff/${user.ID}`)
+      if (user.role == "DOCTOR") {
+        router.push(`/dashboard/doctor/${user.id}`)
+      } else if (user.role == "PATIENT") {
+        router.push(`/dashboard/patient/${user.id}`)
+      } else if (user.role == "ROOT") {
+        router.push(`/dashboard/root/${user.id}`)
+      } else if (user.role == "STAFF") {
+        router.push(`/dashboard/staff/${user.id}`)
       }
 
 

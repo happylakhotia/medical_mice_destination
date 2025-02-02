@@ -17,177 +17,197 @@ import MAILBOX_SUBSCRIPTION from "@/services/apollo/subscriptions/mailBoxSubscri
 import S3_URL_QUERY from "@/services/apollo/queries/getS3Url"
 import SEND_NORMAL_MAIL_MUTATION from "@/services/apollo/mutations/sendMail"
 import { Loader2, MailIcon } from "lucide-react"
+import Link from "next/link"
+import { handleUpload } from "@/services/upload/s3"
 
 function formatDate(dateString: string): string {
-    let dates = dateString.split(" ")
-    return dates[0]
+  let dates = dateString.split(" ")
+  return dates[0]
 }
 
-export default function MailBox() {
-    const client = useApolloClient()
-    const { data: subscriptionData } = useSubscription(MAILBOX_SUBSCRIPTION)
-    const { mailBox, uploadMailBox, addMailToSent, addMailToReceived } = useMailBox()
-    const [activeTab, setActiveTab] = useState<"inbox" | "sent">("inbox")
-    const [newInboxCount, setNewInboxCount] = useState(0)
-    const [newSentCount, setNewSentCount] = useState(0)
-    const [highlightedMails, setHighlightedMails] = useState<Set<string>>(new Set())
+export default function MailBox({ params }: { params: { doctorid: string } }) {
+  const client = useApolloClient()
+  const { data: subscriptionData } = useSubscription(MAILBOX_SUBSCRIPTION)
+  const { mailBox, uploadMailBox, addMailToSent, addMailToReceived } = useMailBox()
+  const [activeTab, setActiveTab] = useState<"inbox" | "sent">("inbox")
+  const [newInboxCount, setNewInboxCount] = useState(0)
+  const [newSentCount, setNewSentCount] = useState(0)
+  const [highlightedMails, setHighlightedMails] = useState<Set<string>>(new Set())
+  const [doctorId, setDoctorId] = useState("")
 
-    useEffect(() => {
-        async function getMailBox() {
-            const { data, error } = await client.query({
-                query: GET_MAILBOX_QUERY,
-                context: {
-                    requiresAuth: true,
-                },
-            })
+  useEffect(() => {
+    async function getMailBox() {
 
-            if (error) {
-                console.error("Error fetching mailbox:", error)
-            } else {
-                uploadMailBox(data.getMailBox)
-            }
-        }
+      const doctor_id = (await params).doctorid
+      setDoctorId(doctor_id)
 
-        getMailBox()
-    }, [])
+      const { data, error } = await client.query({
+        query: GET_MAILBOX_QUERY,
+        context: {
+          requiresAuth: true,
+        },
+      })
 
-    useEffect(() => {
-        if (subscriptionData) {
-            const { MailBoxSubscription } = subscriptionData
-            
-            if (MailBoxSubscription.sent) {
-                addMailToSent(MailBoxSubscription.sent)
-                setNewSentCount(prev => prev + 1)
-                setHighlightedMails(prev => new Set(prev).add(MailBoxSubscription.sent.id))
-            }
-            
-            if (MailBoxSubscription.received) {
-                addMailToReceived(MailBoxSubscription.received)
-                setNewInboxCount(prev => prev + 1)
-                setHighlightedMails(prev => new Set(prev).add(MailBoxSubscription.received.id))
-            }
-        }
-    }, [subscriptionData])
-
-    // Clear highlight after 5 seconds
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setHighlightedMails(new Set())
-        }, 5000)
-        return () => clearTimeout(timer)
-    }, [highlightedMails])
-
-    if (!mailBox) {
-        return <div className="text-center p-4">Loading...</div>
+      if (error) {
+        console.error("Error fetching mailbox:", error)
+      } else {
+        uploadMailBox(data.getMailBox)
+        console.log(mailBox)
+      }
     }
+    getMailBox()
+  }, [])
 
-    return (
-        <div className="container mx-auto p-4">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold">Mailbox</h1>
-                <Dialog>
-                    <DialogTrigger asChild>
-                        <Button>Compose</Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                            <DialogTitle>Compose New Email</DialogTitle>
-                        </DialogHeader>
-                        <Write />
-                    </DialogContent>
-                </Dialog>
-            </div>
+  useEffect(() => {
+    if (subscriptionData) {
+      const { MailBoxSubscription } = subscriptionData
 
-            <Tabs defaultValue="inbox" className="w-full" onValueChange={(val) => {
-                setActiveTab(val as "inbox" | "sent")
-                if (val === "inbox") setNewInboxCount(0)
-                if (val === "sent") setNewSentCount(0)
-            }}>
-                <TabsList>
-                    <TabsTrigger value="inbox" className="relative">
-                        Inbox 
-                        {newInboxCount > 0 && (
-                            <span className="ml-2 text-xs bg-red-500 text-white px-2 py-1 rounded-full animate-pulse">
-                                {newInboxCount}
-                            </span>
-                        )}
-                    </TabsTrigger>
-                    <TabsTrigger value="sent" className="relative">
-                        Sent 
-                        {newSentCount > 0 && (
-                            <span className="ml-2 text-xs bg-red-500 text-white px-2 py-1 rounded-full animate-pulse">
-                                {newSentCount}
-                            </span>
-                        )}
-                    </TabsTrigger>
-                </TabsList>
-                <TabsContent value="inbox">
-                    <MailList 
-                        mails={mailBox.receivedEmails} 
-                        type="Received" 
-                        highlightedMails={highlightedMails}
-                    />
-                </TabsContent>
-                <TabsContent value="sent">
-                    <MailList 
-                        mails={mailBox.sentmails} 
-                        type="Sent"
-                        highlightedMails={highlightedMails}
-                    />
-                </TabsContent>
-            </Tabs>
-        </div>
-    )
+      if (MailBoxSubscription.sent) {
+        addMailToSent(MailBoxSubscription.sent)
+        setNewSentCount(prev => prev + 1)
+        setHighlightedMails(prev => new Set(prev).add(MailBoxSubscription.sent.id))
+      }
+
+      if (MailBoxSubscription.received) {
+        addMailToReceived(MailBoxSubscription.received)
+        setNewInboxCount(prev => prev + 1)
+        setHighlightedMails(prev => new Set(prev).add(MailBoxSubscription.received.id))
+      }
+    }
+  }, [subscriptionData])
+
+  // Clear highlight after 5 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setHighlightedMails(new Set())
+    }, 5000)
+    return () => clearTimeout(timer)
+  }, [highlightedMails])
+
+  if (!mailBox) {
+    return <div className="text-center p-4">Loading...</div>
+  }
+
+  return (
+    <div className="container mx-auto p-4">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Mailbox</h1>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button>Compose</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Compose New Email</DialogTitle>
+            </DialogHeader>
+            <Write />
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      <Tabs defaultValue="inbox" className="w-full" onValueChange={(val) => {
+        setActiveTab(val as "inbox" | "sent")
+        if (val === "inbox") setNewInboxCount(0)
+        if (val === "sent") setNewSentCount(0)
+      }}>
+        <TabsList>
+          <TabsTrigger value="inbox" className="relative">
+            Inbox
+            {newInboxCount > 0 && (
+              <span className="ml-2 text-xs bg-red-500 text-white px-2 py-1 rounded-full animate-pulse">
+                {newInboxCount}
+              </span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="sent" className="relative">
+            Sent
+            {newSentCount > 0 && (
+              <span className="ml-2 text-xs bg-red-500 text-white px-2 py-1 rounded-full animate-pulse">
+                {newSentCount}
+              </span>
+            )}
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="inbox">
+          <MailList
+            doctorId={doctorId}
+            mails={mailBox.receivedEmails}
+            type="Received"
+            highlightedMails={highlightedMails}
+          />
+        </TabsContent>
+        <TabsContent value="sent">
+          <MailList
+            doctorId={doctorId}
+            mails={mailBox.sentmails}
+            type="Sent"
+            highlightedMails={highlightedMails}
+          />
+        </TabsContent>
+      </Tabs>
+    </div>
+  )
 }
 
-function MailList({ mails, type, highlightedMails }: { 
-    mails: Mail[]; 
-    type: "Received" | "Sent";
-    highlightedMails: Set<string>;
+function MailList({ mails, type, highlightedMails, doctorId }: {
+  mails: Mail[];
+  type: "Received" | "Sent";
+  highlightedMails: Set<string>;
+  doctorId: string;
 }) {
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle>{type} Emails</CardTitle>
-                <CardDescription>
-                    You have {mails.length} {type.toLowerCase()} emails.
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <ScrollArea className="h-[600px]">
-                    {mails.map((mail) => (
-                        <div 
-                            key={mail.id} 
-                            className={`border-b pb-4 mb-4 transition-all duration-300 ${
-                                highlightedMails.has(mail.id) 
-                                    ? 'bg-blue-50 shadow-md rounded-lg p-4' 
-                                    : ''
-                            }`}
-                        >
-                            <div className="flex justify-between items-start">
-                                <div>
-                                    <h3 className="text-sm font-semibold">
-                                        {type === "Received" ? `From: ${mail.sender}` : `To: ${mail.receiver}`}
-                                    </h3>
-                                    <p className="text-sm text-gray-600">{mail.content}</p>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    {highlightedMails.has(mail.id) && (
-                                        <MailIcon className="w-4 h-4 text-blue-500 animate-bounce" />
-                                    )}
-                                    <span className="text-xs text-gray-500">
-                                        {formatDate(mail.createdAt)}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </ScrollArea>
-            </CardContent>
-        </Card>
-    )
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{type} Emails</CardTitle>
+        <CardDescription>
+          You have {mails.length} {type.toLowerCase()} emails.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ScrollArea className="h-[600px]">
+          {mails.map((mail) => (
+            <Link href={`/dashboard/doctor/${doctorId}/mailbox/${mail.id}`} key={mail.id}>
+              <div
+                key={mail.id}
+                className={`border-b pb-4 mb-4 transition-all duration-300 ${highlightedMails.has(mail.id)
+                    ? 'bg-blue-50 shadow-md rounded-lg p-4'
+                    : ''
+                  }`}
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-sm font-semibold">
+                      {type === "Received" ? `From: ${mail.sender}` : `To: ${mail.receiver}`}
+                    </h3>
+                    <p className="text-sm text-gray-600">{mail.content}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {highlightedMails.has(mail.id) && (
+                      <MailIcon className="w-4 h-4 text-blue-500 animate-bounce" />
+                    )}
+                    {/* Visual indicator for mail type */}
+                    {mail.type && (
+                      <span className={`text-xs font-semibold px-2 py-1 rounded-full 
+                                              ${mail.type === "APPLICATION" ? 'bg-red-500 text-white' :
+                          mail.type === "NORMAL" ? 'bg-yellow-500 text-white' :
+                            mail.type === "INVITATION" ? 'bg-green-500 text-white' :
+                              'bg-gray-300 text-gray-800'}`}>
+                        {mail.type}
+                      </span>
+                    )}
+                    <span className="text-xs text-gray-500">
+                      {formatDate(mail.createdAt)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </ScrollArea>
+      </CardContent>
+    </Card>
+  );
 }
-
 
 export function Write() {
   const client = useApolloClient()
@@ -205,32 +225,20 @@ export function Write() {
     }
   }
 
-  const uploadFile = async (file: File) => {
+
+  async function handleFileUpload(file: File) {
     setUploading(true)
     try {
-      const { data } = await client.query({
-        query: S3_URL_QUERY,
-        context: { requiresAuth: true }
-      })
-      const uploadUrl = data.getS3Url
-
-      const response = await fetch(uploadUrl, {
-        method: "PUT",
-        body: file,
-        headers: { "Content-Type": file.type }
-      })
-
-      console.log(data)
-      if (response.ok) {
-        setUploadedFiles([...uploadedFiles, uploadUrl.split("?")[0]]) // Store the S3 file URL
-      } else {
-        console.error("File upload failed")
-      }
+      const url = await handleUpload(file)
+      setUploadedFiles([...uploadedFiles, url])
     } catch (err) {
-      console.error("Error uploading file:", err)
+      console.log(err)
     }
+
     setUploading(false)
   }
+
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -287,7 +295,7 @@ export function Write() {
                   <Button
                     type="button"
                     size="sm"
-                    onClick={() => uploadFile(file)}
+                    onClick={() => handleFileUpload(file)}
                     disabled={uploading}
                     className="ml-2"
                   >

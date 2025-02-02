@@ -1,6 +1,7 @@
+import Link from 'next/link'
 import React from 'react'
 
-const EvisaProcess = () => {
+const EvisaProcess = ({patientid}: {patientid: string}) => {
   return (
     <div id="root">
       <section id="evisaProcess" className="bg-neutral-100 py-20">
@@ -173,9 +174,9 @@ const EvisaProcess = () => {
           </div>
 
           <div className="mt-12 text-center">
-            <button className="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-6 py-3 text-base font-medium text-white transition duration-300 hover:bg-blue-700">
+            <Link href={`/dashboard/patient/${patientid}/checklist`} className="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-6 py-3 text-base font-medium text-white transition duration-300 hover:bg-blue-700">
               Start eVisa Application
-            </button>
+            </Link>
           </div>
         </div>
       </section>

@@ -17,51 +17,83 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useRecommendationProvider } from '@/services/contexts/recommendations'
+import Link from 'next/link'
 
-const hospitals = [
-  {
-    name: 'Mayo Clinic',
-    location: 'Rochester, Minnesota, USA',
-    rating: 4.9,
-    osniteReview: 95,
-    specialties: ['Cardiology', 'Oncology', 'Neurology'],
-  },
-  {
-    name: 'Johns Hopkins Hospital',
-    location: 'Baltimore, Maryland, USA',
-    rating: 4.8,
-    osniteReview: 92,
-    specialties: ['Surgery', 'Research', 'Pediatrics'],
-  },
-  {
-    name: 'Cleveland Clinic',
-    location: 'Cleveland, Ohio, USA',
-    rating: 4.7,
-    osniteReview: 90,
-    specialties: ['Cardiology', 'Orthopedics', 'Urology'],
-  },
-  {
-    name: 'Cleveland Clinic',
-    location: 'Cleveland, Ohio, USA',
-    rating: 4.7,
-    osniteReview: 90,
-    specialties: ['Cardiology', 'Orthopedics', 'Urology'],
-  },
-  {
-    name: 'Cleveland Clinic',
-    location: 'Cleveland, Ohio, USA',
-    rating: 4.7,
-    osniteReview: 90,
-    specialties: ['Cardiology', 'Orthopedics', 'Urology'],
-  },
-  {
-    name: 'Cleveland Clinic',
-    location: 'Cleveland, Ohio, USA',
-    rating: 4.7,
-    osniteReview: 90,
-    specialties: ['Cardiology', 'Orthopedics', 'Urology'],
-  },
-]
+
+function getAverageRating(ratings: any) {
+  let sum = 0;
+  if (ratings.length > 0) {
+    for (let i = 0; i < ratings.length; i++) {
+      sum += ratings[i]
+    }
+    return sum/ratings.length
+  } else {
+    return 0
+  }
+
+}
+
+
+const HospitalCard = ({ recommendation }: { recommendation: any }) => (
+
+  <Card className="overflow-hidden transition-all hover:scale-105 hover:shadow-lg">
+    {recommendation.Media_FrontUrl && (
+      <img
+        src={recommendation.Media_FrontUrl}
+        alt={recommendation.BasicInfo_HospitalName}
+        className="w-full h-48 object-cover"
+      />
+    )}
+    <CardContent className="p-6">
+      <h3 className="mb-2 text-xl font-semibold">
+        {recommendation.BasicInfo_HospitalName}
+      </h3>
+      <p className="mb-4 text-sm text-gray-600">
+        {recommendation.BasicInfo_AddressInformation_City || 'Location not specified'}
+      </p>
+      <div className="mb-4 text-sm text-gray-600">
+        Onsite Rating: {recommendation.OnsiteRating}/100
+        <div>Consultation Fee: ₹{recommendation.ConsultationFee}</div>
+      </div>
+      <div className="mb-4 text-sm text-gray-600">
+        Rating: {getAverageRating(recommendation.Ratings)}
+      </div>
+
+      <div className="mb-4">
+        <p className="text-sm font-semibold mb-2">Facilities:</p>
+        <div className="flex flex-wrap gap-2">
+          {recommendation.Amenities_Facilities?.map((facility: any) => (
+            <span
+              key={facility}
+              className="rounded-full bg-green-100 px-3 py-1 text-xs text-green-800"
+            >
+              {facility}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="mb-4">
+        <p className="text-sm font-semibold mb-2">Specializations:</p>
+        <div className="flex flex-wrap gap-2">
+          {recommendation.Amenities_Specialization?.map((specialty: any) => (
+            <span
+              key={specialty}
+              className="rounded-full bg-blue-100 px-3 py-1 text-xs text-blue-800"
+            >
+              {specialty}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <Button variant="outline" className="w-full">
+        View Details
+      </Button>
+    </CardContent>
+  </Card>
+);
 
 const SearchBar = () => {
   const [searchType, setSearchType] = useState('')
@@ -170,46 +202,13 @@ const SearchBar = () => {
   )
 }
 
-const HospitalCard = ({
-  name,
-  location,
-  rating,
-  osniteReview,
-  specialties,
-}) => (
-  <Card className="overflow-hidden transition-all hover:scale-105 hover:shadow-lg">
-    <CardContent className="p-6">
-      <h3 className="mb-2 text-xl font-semibold">{name}</h3>
-      <p className="mb-4 text-sm text-gray-600">{location}</p>
-      <div className="mb-4 flex items-center">
-        <div className="flex text-yellow-400">
-          {'★'.repeat(Math.round(rating))}
-        </div>
-        <span className="ml-2 text-sm text-gray-600">
-          ({rating} Customer Review)
-        </span>
-      </div>
-      <div className="mb-4 text-sm text-gray-600">
-        Osnite Review: {osniteReview}/100
-      </div>
-      <div className="mb-4 flex flex-wrap gap-2">
-        {specialties.map((specialty) => (
-          <span
-            key={specialty}
-            className="rounded-full bg-blue-100 px-3 py-1 text-xs text-blue-800"
-          >
-            {specialty}
-          </span>
-        ))}
-      </div>
-      <Button variant="outline" className="w-full">
-        View Details
-      </Button>
-    </CardContent>
-  </Card>
-)
-
 const RecommendationsPage = () => {
+  const { recommendations } = useRecommendationProvider()
+
+  if (!recommendations) {
+    return <div>Loading ...</div>
+  }
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-8">
@@ -226,11 +225,13 @@ const RecommendationsPage = () => {
 
         <section id="hospitalList">
           <h2 className="mb-6 text-2xl font-semibold text-gray-900">
-            Search Results for "Cardiology"
+            Available Hospitals
           </h2>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {hospitals.map((hospital, index) => (
-              <HospitalCard key={index} {...hospital} />
+            {recommendations.map((hospital: any, index: any) => (
+              <Link href={`/hospitals/${hospital._id}`}>
+                <HospitalCard key={hospital._id} recommendation={hospital} />
+              </Link>
             ))}
           </div>
           <div className="mt-12 text-center">

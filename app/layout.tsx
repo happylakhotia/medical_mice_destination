@@ -6,6 +6,9 @@ import Footer from '@/components/landing/Footer'
 import createApolloClient from '@/services/apollo/client'
 import { ApolloProvider } from '@apollo/client'
 import { UserContextProvider } from '@/services/contexts/userContext'
+import { RecommendationContextProvider } from '@/services/contexts/recommendations'
+import { UserHospitalContextProvider } from "@/services/contexts/userHospitalContext"
+import { useEffect } from 'react'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -24,6 +27,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+
+
+
+
   return (
     <html lang="en">
       <body
@@ -31,12 +38,16 @@ export default function RootLayout({
       >
         <ApolloProvider client={client}>
           <UserContextProvider>
-            <NavBar />
-            {children}
-            <Footer />
+            <RecommendationContextProvider>
+              <UserHospitalContextProvider>
+                <NavBar />
+                {children}
+                <Footer />
+              </UserHospitalContextProvider>
+            </RecommendationContextProvider>
           </UserContextProvider>
         </ApolloProvider>
       </body>
-    </html>
+    </html >
   )
 }

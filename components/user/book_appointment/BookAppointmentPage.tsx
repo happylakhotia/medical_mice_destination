@@ -16,6 +16,7 @@ import SEND_APPLICATION_MUTATION from '@/services/apollo/mutations/sendApplicati
 import { useState } from 'react'
 import { Loader2, Upload } from 'lucide-react'
 import S3_URL_QUERY from '@/services/apollo/queries/getS3Url'
+import { handleUpload } from '@/services/upload/s3'
 
 declare global {
   interface Window {
@@ -38,32 +39,7 @@ const BookAppointmentPage = ({ Hospital_Id }: { Hospital_Id: string }) => {
   const [uploadedDocUrls, setUploadedDocUrls] = useState<string[]>([])
   const [uploadedPassportUrl, setUploadedPassportUrl] = useState<string>("")
 
-  const handleFileUpload = async (file: File, type: 'document' | 'passport') => {
-    // This is a placeholder for your actual file upload logic
-    // You would typically:
-    // 1. Get a presigned URL from your backend
-    try {
-      const { data } = await client.query({
-        query: S3_URL_QUERY,
-        context: {
-          requiresAuth: true
-        }
-      })
-
-      const uploadUri = data.getS3Url
-      // 2. Upload the file to S3 or your storage
-      const response = await fetch(uploadUri, {
-        method: "PUT",
-        body: file,
-        headers: { "Content-Type": file.type }
-      })
-      // 3. Return the public URL
-      // For now, we'll simulate it:
-      return uploadUri.split("?")[0]
-    } catch (err) {
-      console.log(err)
-    }
-  }
+ 
 
   const initializeRazorpay = () => {
     return new Promise((resolve) => {
@@ -88,15 +64,17 @@ const BookAppointmentPage = ({ Hospital_Id }: { Hospital_Id: string }) => {
     }
 
     // Upload documents first
+    let finalDocumentsUrls = []
+    let finalpassportUrl: string;
     try {
-      const documentUrls = await Promise.all(
-        documents.map(doc => handleFileUpload(doc, 'document'))
+      finalDocumentsUrls = await Promise.all(
+        documents.map(doc => handleUpload(doc))
       )
-      setUploadedDocUrls(documentUrls)
+      setUploadedDocUrls(finalDocumentsUrls)
 
       if (passport) {
-        const passportUrl = await handleFileUpload(passport, 'passport')
-        setUploadedPassportUrl(passportUrl)
+       finalpassportUrl = await handleUpload(passport)
+        setUploadedPassportUrl(finalpassportUrl)
       }
     } catch (err) {
       console.error("Error uploading files:", err)
@@ -119,19 +97,21 @@ const BookAppointmentPage = ({ Hospital_Id }: { Hospital_Id: string }) => {
             patientAge: formData.get("patientAge") as string,
             patientGender: gender,
             phoneNumber: formData.get("phoneNumber"),
-            passport: uploadedPassportUrl,
+            passport: finalpassportUrl,
             allergies: formData.get("allergies") || "",
-            documents: uploadedDocUrls,
+            documents: finalDocumentsUrls,
             razorpayPaymentId: response.razorpay_payment_id,
             razorpayOrderId: response.razorpay_order_id,
             razorpaySignature: response.razorpay_signature,
           }
-
+          console.log(userData)
           const { data } = await createApplication({
             variables: userData,
             context: { requiresAuth: true }
           })
           console.log(data)
+          setLoading(false)
+          alert("appointment successfully done")
         } catch (err) {
           console.error(err)
         }
@@ -263,7 +243,6 @@ const BookAppointmentPage = ({ Hospital_Id }: { Hospital_Id: string }) => {
                     <Input
                       type="file"
                       required
-                      accept="image/*,.pdf"
                       onChange={(e) => {
                         const file = e.target.files?.[0]
                         if (file) setPassport(file)
@@ -279,7 +258,6 @@ const BookAppointmentPage = ({ Hospital_Id }: { Hospital_Id: string }) => {
                   <Input
                     type="file"
                     multiple
-                    accept="image/*,.pdf"
                     onChange={(e) => {
                       const files = Array.from(e.target.files || [])
                       setDocuments(files)

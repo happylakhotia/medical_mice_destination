@@ -2,56 +2,58 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
+import { useHospital } from '@/services/contexts/hopitalContext'
 
-export default function FacilityDetails({
-  registrationStepSetter,
-  hospitalSetter,
-}: {
-  registrationStepSetter: (step: number) => void
-  hospitalSetter: (something: (prevState: Hospital) => Hospital) => void
-}) {
+export default function FacilityDetails({handleStep}: {handleStep: () => void}) {
+  const {updateHospital} = useHospital()
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    const form = e.currentTarget as HTMLFormElement
-    const formData = new FormData(form)
-    const data: any = Object.fromEntries(formData.entries())
+    e.preventDefault();
+    const form = e.currentTarget as HTMLFormElement;
+    const formData = new FormData(form);
+    const data: any = Object.fromEntries(formData.entries());
 
-    hospitalSetter((prevState) => ({
-      ...prevState,
-      Facilities: {
-        BedCapacity: {
-          GeneralWardBeds: parseInt(data.general_ward_beds),
-          IcuBeds: parseInt(data.icu_ward_beds),
-          PrivateRoomBeds: parseInt(data.private_room_beds),
-          EmergencyBeds: parseInt(data.emergency_beds),
-        },
-        MedicalStaff: {
-          PermenantDoctors: parseInt(data.permenant_doctors),
-          VisitingConsultants: parseInt(data.visiting_consultants),
-          Nurses: parseInt(data.nurses),
-          SupportStaff: parseInt(data.support_staff),
-        },
-        Facilities: {
-          EmergencyCare: data.emergency_care === 'on',
-          Laboratory: data.laboratory === 'on',
-          Pharmacy: data.pharmacy === 'on',
-          Radiology: data.radiology === 'on',
-          OperationTheatre: data.operation_theatre === 'on',
-          BloodBank: data.blood_bank === 'on',
-        },
-        Specialization: {
-          Cardiology: data.cardiology === 'on',
-          Neurology: data.neurology === 'on',
-          OrthoPedics: data.orthopedics === 'on',
-          Pediatrics: data.pediatrics === 'on',
-          Gynecology: data.gynecology === 'on',
-          Oncology: data.oncology === 'on',
-        },
-      },
-    }))
+    let facilities: string[] = [];
+    let specialization: string[] = [];
 
-    registrationStepSetter(3)
-  }
+    // Facilities
+    if (data.emergency_care === "on") facilities.push("Emergency Care");
+    if (data.laboratory === "on") facilities.push("Laboratory");
+    if (data.pharmacy === "on") facilities.push("Pharmacy");
+    if (data.radiology === "on") facilities.push("Radiology");
+    if (data.operation_theatre === "on") facilities.push("Operation Theatre");
+    if (data.blood_bank === "on") facilities.push("Blood Bank");
+
+    // Specialization
+    if (data.cardiology === "on") specialization.push("Cardiology");
+    if (data.neurology === "on") specialization.push("Neurology");
+    if (data.orthopedics === "on") specialization.push("Orthopedics");
+    if (data.pediatrics === "on") specialization.push("Pediatrics");
+    if (data.gynecology === "on") specialization.push("Gynecology");
+    if (data.oncology === "on") specialization.push("Oncology");
+
+    updateHospital({
+        Amenities: {
+            BedCapacity: {
+                GeneralWardBeds: parseInt(data.general_ward_beds),
+                IcuBeds: parseInt(data.icu_ward_beds),
+                PrivateRoomBeds: parseInt(data.private_room_beds),
+                EmergencyBeds: parseInt(data.emergency_beds),
+            },
+            MedicalStaff: {
+                PermenantDoctors: parseInt(data.permenant_doctors),
+                VisitingConsultants: parseInt(data.visiting_consultants),
+                Nurses: parseInt(data.nurses),
+                SupportStaff: parseInt(data.support_staff),
+            },
+            Facilities: facilities,
+            Specialization: specialization,
+        },
+    });
+
+    handleStep();
+}
+
 
   return (
     <section className="h-screen overflow-hidden px-4 py-4">

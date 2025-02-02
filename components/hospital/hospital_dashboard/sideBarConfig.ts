@@ -1,4 +1,4 @@
-import { Icon, LucideIcon, Mail } from 'lucide-react'
+import { BellElectric, Building, Hospital, Icon, LucideIcon, Mail } from 'lucide-react'
 
 export interface MenuItem {
   title: string
@@ -39,22 +39,17 @@ export const sidebarConfig: Record<string, MenuItem[]> = {
         icon: Users,
         url: (id: string) => `/dashboard/doctor/${id}/patients`,
       },
-      {
-        title: 'Medical Records',
-        icon: FileText,
-        url: (id: string) => `/dashboard/doctor/${id}/records`,
-      },
     ],
     patient: [
       {
-        title: 'My Health',
-        icon: Heart,
-        url: (id: string) => `/dashboard/patient/${id}/health`,
+        title: 'Explore Hospitals',
+        icon: Hospital,
+        url: (id: string) => `/explain`,
       },
       {
-        title: 'Appointments',
+        title: 'MailBox',
         icon: Calendar,
-        url: (id: string) => `/dashboard/patient/${id}/appointments`,
+        url: (id: string) => `/dashboard/patient/${id}/mailbox`,
       },
       {
         title: 'My Doctors',
@@ -62,9 +57,14 @@ export const sidebarConfig: Record<string, MenuItem[]> = {
         url: (id: string) => `/dashboard/patient/${id}/doctors`,
       },
       {
-        title: 'Medical History',
-        icon: Activity,
-        url: (id: string) => `/dashboard/patient/${id}/history`,
+        title: 'Visa',
+        icon: Building,
+        url: (id: string) => `/dashboard/patient/${id}/evisa`,
+      },
+      {
+        title: 'Flights',
+        icon: BellElectric,
+        url: (id: string) => `/dashboard/patient/${id}/flights`,
       },
     ],
     staff: [

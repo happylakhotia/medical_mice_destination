@@ -1,8 +1,10 @@
+"use client"
 import React from 'react'
 import { Textarea } from '@/components/ui/textarea'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { useRecommendationProvider } from '@/services/contexts/recommendations'
+import { useRouter } from 'next/navigation'
 
 // Combined steps and descriptions into a single array
 const steps = [
@@ -64,6 +66,42 @@ const HowItWorks = () => {
 }
 
 const Explain = () => {
+  const { uploadRecommendations } = useRecommendationProvider()
+  const router = useRouter()
+
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const form = e.currentTarget as HTMLFormElement
+    const formData = new FormData(form)
+    const data = {
+      user_prompt: formData.get("userCondition")
+    }
+    console.log(data)
+    try {
+      const response = await fetch(`https://voyagehack-recommend-1.onrender.com/api/v1/recommendations`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+      if (!response.ok) {
+        console.log(response)
+        throw new Error(`can't get the response`)
+      }
+      const textResponse = await response.text()
+      const cleanedResponse = textResponse.replace(/NaN/g, "null")
+      const responseData = JSON.parse(cleanedResponse)
+      console.log(responseData)
+      uploadRecommendations(responseData)
+      router.push("/hospitals")
+
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   return (
     <div className="flex-1 flex-grow rounded-2xl bg-white p-10 shadow-lg">
       <h2 className="mb-6 text-4xl font-bold">
@@ -73,21 +111,7 @@ const Explain = () => {
         We will determine the best suited hospitals for you based on your
         medical conditon
       </p>
-      <form className="space-y-6">
-        <div>
-          <Label
-            className="mb-2 block text-lg font-medium text-gray-700"
-            htmlFor="name"
-          >
-            Enter Your Name
-          </Label>
-          <Input
-            type="text"
-            id="name"
-            className="w-full rounded-lg p-4 text-lg"
-            placeholder="Your name"
-          />
-        </div>
+      <form className="space-y-6" onSubmit={handleSubmit}>
         <div>
           <Label
             className="mb-2 block text-lg font-medium text-gray-700"
@@ -97,6 +121,7 @@ const Explain = () => {
           </Label>
           <Textarea
             id="condition"
+            name="userCondition"
             rows={8}
             className="w-full rounded-lg p-4 text-lg"
             placeholder="Describe your condition"

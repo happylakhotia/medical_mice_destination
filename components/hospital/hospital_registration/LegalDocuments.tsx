@@ -1,84 +1,49 @@
 'use client'
 import { Hospital } from '@/services/types/hospital'
-import { UploadOnS3 } from '@/services/upload/s3'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { useApolloClient } from '@apollo/client'
+import S3_URL_QUERY from '@/services/apollo/queries/getS3Url'
+import { useHospital } from '@/services/contexts/hopitalContext'
+import { handleUpload } from '@/services/upload/s3'
 
-export default function LegalDocuments({
-  registrationStepSetter,
-  hospitalSetter,
-}: {
-  registrationStepSetter: (step: number) => void
-  hospitalSetter: (something: (prevState: Hospital) => Hospital) => void
-}) {
-  const [hospitalRegistrationFileUrl, setHospitalRegistrationFileUrl] =
-    useState('')
-  const [medicalLicenseUrl, setMedicalLiceseUrl] = useState('')
-  const [taxRegistrationCertificateUrl, setTaxRegistrationCertificateUrl] =
-    useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+export default function LegalDocuments({ handleStep }: { handleStep: () => void }) {
+  const client = useApolloClient()
+  const [uploading, setUploading] = useState(false)
+  const { updateHospital, hospital } = useHospital()
 
-  function hospitalRegistrationFileUrlSetter(url: string) {
-    setHospitalRegistrationFileUrl(url)
-  }
 
-  function medicalLicenseUrlSetter(url: string) {
-    setMedicalLiceseUrl(url)
-  }
 
-  function taxRegistrationCertificateUrlSetter(url: string) {
-    setTaxRegistrationCertificateUrl(url)
-  }
 
-  function errorSetter(msg: string) {
-    setError(msg)
-  }
+
+
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    setError('')
     e.preventDefault()
     const form = e.currentTarget as HTMLFormElement
     const formData = new FormData(form)
     const data: any = Object.fromEntries(formData.entries())
-
     try {
-      setLoading(true)
-      const [url1, url2, url3] = await Promise.all([
-        UploadOnS3(
-          e,
-          hospitalRegistrationFileUrlSetter,
-          errorSetter,
-          'hospital_registration_file'
-        ),
-        UploadOnS3(
-          e,
-          medicalLicenseUrlSetter,
-          errorSetter,
-          'medical_license_file'
-        ),
-        UploadOnS3(
-          e,
-          taxRegistrationCertificateUrlSetter,
-          errorSetter,
-          'tax_registration_certificate_file'
-        ),
-      ])
-      setLoading(false)
 
-      hospitalSetter((prevState) => ({
-        ...prevState,
-        LegalDocuments: {
-          HospitalRegistrationUrl: url1!,
-          MedicalLicense: url2!,
-          TaxRegistrationCertificate: url3!,
-        },
-      }))
+      setUploading(true)
+      const [hospitalRegistrationUrl, hospitalMedicalUrl, hospitalTaxUrl] = await Promise.all([handleUpload(data.hospital_registration_file), handleUpload(data.medical_license_file), handleUpload(data.tax_registration_certificate_file)])
+      setUploading(false)
 
-      registrationStepSetter(4)
+      updateHospital({
+        Amenities: {
+          ...hospital?.Amenities,
+          LegalDocuments: {
+            HospitalRegistrationUrl: hospitalRegistrationUrl,
+            MedicalLicense: hospitalMedicalUrl,
+            TaxRegistrationCertificate: hospitalTaxUrl,
+          },
+        }
+      })
+      handleStep()
+
     } catch (err) {
       console.log(err)
-      setError('Error in uploading files')
+
     }
   }
 
@@ -149,19 +114,16 @@ export default function LegalDocuments({
                     </div>
                   </div>
                 </div>
+
+                {/* Submit Button */}
+                <div className="mt-6">
+                  <Button type="submit" className="w-1/3" disabled={uploading}>
+                    {uploading ? "Uploading..." : "Save and Continue"}
+                  </Button>
+                </div>
               </form>
 
-              {/* Submit Button */}
-              <div className="mt-6">
-                <Button type="submit" className="w-1/3">
-                  {loading ? 'Uploading...' : 'Save and Continue'}
-                </Button>
-              </div>
-
               {/* Error Message */}
-              {error && (
-                <p className="mt-4 text-center text-red-500">{error}</p>
-              )}
             </div>
           </div>
         </div>

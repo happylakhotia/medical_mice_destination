@@ -12,7 +12,15 @@ const navigationOptions = [
 
 // Profile Component
 function Profile({user}: {user:User}) {
-  return <Link href={`/dashboard/patient/${user.ID}`}>{user.Name}</Link>
+  if (user.role == "PATIENT") {
+
+    return <Link href={`/dashboard/patient/${user.id}`}>{user.name}</Link>
+  } else if (user.role == "DOCTOR") {
+
+    return <Link href={`/dashboard/doctor/${user.id}`}>{user.name}</Link>
+  } else if (user.role == "ROOT") {
+    return <Link href={`/dashboard/root/${user.id}`}>{user.name}</Link>
+  }
 }
 
 // LogIn Button

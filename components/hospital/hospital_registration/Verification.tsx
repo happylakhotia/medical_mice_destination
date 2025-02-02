@@ -2,25 +2,22 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { DateTimePicker } from '@/components/ui/date_time_picker'
+import { useHospital } from '@/services/contexts/hopitalContext'
 
-export default function Verification({
-  registrationStepSetter,
-  hospitalSetter,
-}: {
-  registrationStepSetter: (step: number) => void
-  hospitalSetter: (something: (prevState: Hospital) => Hospital) => void
-}) {
+export default function Verification({handleStep}: {handleStep: () => void}) {
+
+  const {updateHospital} = useHospital()
+
+
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const form = e.currentTarget as HTMLFormElement
     const formData = new FormData(form)
     const data: any = Object.fromEntries(formData.entries())
 
-    hospitalSetter((prevState) => ({
-      ...prevState,
+    updateHospital({
       OnSiteVerification: {
-        PreferredDate: new Date(data.preferred_date),
-        PreferredTime: data.preferred_time,
         VerificationContact: {
           Name: data.name,
           Position: data.position,
@@ -28,10 +25,13 @@ export default function Verification({
           AlternatePhone: data.alternate_phone,
         },
       },
-    }))
+      OnsiteRating: Number(data.onsiterating)
+    })
 
-    console.log('final handler called ...')
+    handleStep()
+
   }
+
 
   return (
     <section className="h-screen overflow-hidden px-4 py-4">
@@ -60,8 +60,6 @@ export default function Verification({
                   </h3>
                   <div className="space-y-3">
                     <DateTimePicker
-                      name="preferred_date"
-                      label="Preferred Date and Time"
                     />
                   </div>
                 </div>
@@ -117,6 +115,18 @@ export default function Verification({
                         name="alternate_phone"
                         required
                         aria-label="Alternate Phone"
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label className="block text-sm font-medium text-gray-700">
+                         On Site Rating
+                      </Label>
+                      <Input
+                        type="number"
+                        name="onsiterating"
+                        required
+                        aria-label="onsite Rating"
                         className="mt-1"
                       />
                     </div>
